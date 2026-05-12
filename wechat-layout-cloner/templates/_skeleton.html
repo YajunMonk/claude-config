@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{TEMPLATE_NAME}} · 公众号排版模板</title>
+<!--
+  模板名：{{TEMPLATE_NAME}}
+  复刻自：{{SOURCE_URL}}
+  原文标题：{{SOURCE_TITLE}}
+  原文作者：{{SOURCE_AUTHOR}}
+  生成时间：{{GENERATED_AT}}
+
+  设计语言摘要（两三句话，由 AI 填）：
+  {{DESIGN_LANGUAGE}}
+
+  识别出的组件（由 AI 填）：
+  {{COMPONENT_LIST}}
+-->
+<style>
+  :root {
+    /* ========== 调色板（由 AI 填） ========== */
+    --color-accent-1: #D97757;        /* 主色 */
+    --color-accent-2: #8B5A3C;        /* 辅色 */
+    --color-text: #141413;            /* 正文 */
+    --color-heading: #1A1A1A;         /* 标题 */
+    --color-text-secondary: #666;     /* 次要文字（图注、作者信息） */
+    --color-text-muted: #888;         /* 辅助 */
+    --color-bg-page: #FFFFFF;         /* 页面底 */
+    --color-bg-emphasis: #FDF6F0;     /* 强调框底 */
+    --color-bg-quote: #FAF9F5;        /* 引用底 */
+    --color-bg-code: #F5F0E8;         /* 代码底 */
+    --color-border: #E5E0D8;          /* 边框 */
+    --color-link: #D97757;            /* 链接 */
+
+    /* ========== 字体系统（由 AI 填） ========== */
+    --font-body: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    --font-heading: var(--font-body);
+    --font-mono: "SF Mono", Menlo, Consolas, monospace;
+
+    --font-size-body: 16px;
+    --font-size-h1: 24px;
+    --font-size-h2: 20px;
+    --font-size-h3: 17px;
+    --font-size-caption: 13px;
+
+    --line-height-body: 1.8;
+    --letter-spacing-body: 0.5px;
+    --font-weight-heading: 700;
+
+    /* ========== 间距系统（由 AI 填） ========== */
+    --space-paragraph: 1em;
+    --space-heading-top: 1.8em;
+    --space-heading-bottom: 0.8em;
+    --space-image: 1.2em;
+  }
+
+  /* ========== 基础 ========== */
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    /* 全局背景色：来自原文最外层 section 的 background。
+       即使是 rgba(26,26,24,0.02) 这种极浅的值也不能省略——它决定底色气质。 */
+    background-color: var(--color-bg-page);
+  }
+  body {
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    line-height: var(--line-height-body);
+    letter-spacing: var(--letter-spacing-body);
+    color: var(--color-text);
+  }
+
+  /* 工具栏（非公众号的，仅浏览器辅助） */
+  .toolbar {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    background: #111;
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 1.5;
+    z-index: 1000;
+    box-shadow: 0 6px 16px rgba(0,0,0,.15);
+    max-width: 240px;
+  }
+  .toolbar button {
+    background: var(--color-accent-1);
+    color: #fff;
+    border: 0;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-bottom: 6px;
+  }
+
+  /* ========== 文章容器 ========== */
+  #article {
+    max-width: 680px;
+    margin: 40px auto;
+    padding: 0 20px 80px;
+    background: transparent; /* 外壳不设背景，背景在 article-body 的 inline style 上 */
+  }
+
+  /*
+   * article-body: 内容真正的背景在这里，用 inline style 写在 HTML 属性上（见下方 <section>）。
+   * 这样复制粘贴到公众号编辑器时，背景色随 inline style 一起过去。
+   * CSS class 里的 background 在粘贴时会丢失，inline style 不会。
+   */
+  #article-body {
+    /* padding 可根据原文调整 */
+    padding: 0;
+  }
+
+  /* ========== 标题（由 AI 根据原文样式改写） ========== */
+  #article h1, #article h2, #article h3 {
+    font-family: var(--font-heading);
+    color: var(--color-heading);
+    font-weight: var(--font-weight-heading);
+    margin-top: var(--space-heading-top);
+    margin-bottom: var(--space-heading-bottom);
+  }
+  #article h1 { font-size: var(--font-size-h1); }
+  #article h2 { font-size: var(--font-size-h2); }
+  #article h3 { font-size: var(--font-size-h3); }
+
+  /* ========== 正文段落 ========== */
+  #article p {
+    margin: var(--space-paragraph) 0;
+  }
+
+  /* ========== 链接 ========== */
+  #article a {
+    color: var(--color-link);
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+  }
+
+  /* ========== 引用 ========== */
+  #article blockquote {
+    margin: 1.4em 0;
+    padding: 16px 20px;
+    background: var(--color-bg-quote);
+    border-left: 3px solid var(--color-accent-1);
+    color: var(--color-text-secondary);
+    font-size: 15px;
+    line-height: 1.8;
+  }
+  #article blockquote p { margin: 0.4em 0; }
+
+  /* ========== 代码 ========== */
+  #article code {
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+    color: var(--color-accent-2);
+    background: rgba(217, 119, 87, 0.08);
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+  #article pre {
+    background: var(--color-bg-code);
+    color: var(--color-text);
+    padding: 16px 18px;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 1.4em 0;
+  }
+  #article pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+  }
+
+  /* ========== 列表 ========== */
+  #article ul, #article ol {
+    padding-left: 1.4em;
+    margin: 1em 0;
+  }
+  #article li { margin: 0.35em 0; }
+  #article ul li::marker { color: var(--color-accent-1); }
+
+  /* ========== 图片 + 图注 ========== */
+  #article img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: var(--space-image) auto;
+    border-radius: 4px;
+  }
+  #article figure { margin: var(--space-image) 0; text-align: center; }
+  #article figcaption {
+    font-size: var(--font-size-caption);
+    color: var(--color-text-secondary);
+    margin-top: 8px;
+    text-align: center;
+  }
+
+  /* ========== 可复用组件（由 AI 根据识别结果增减和微调） ========== */
+
+  /* 强调框：左竖线 + 浅底色 */
+  .emphasis-box {
+    background: var(--color-bg-emphasis);
+    border-left: 4px solid var(--color-accent-1);
+    padding: 14px 18px;
+    margin: 1.4em 0;
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--color-text);
+  }
+
+  /* 重点框：带装饰符的卡片 */
+  .key-point {
+    background: var(--color-bg-emphasis);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin: 1.4em 0;
+    position: relative;
+  }
+  .key-point::before {
+    content: "✦";
+    color: var(--color-accent-1);
+    font-size: 18px;
+    margin-right: 8px;
+  }
+
+  /* 步骤序号圆点 */
+  .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background: var(--color-accent-1);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 13px;
+    font-weight: 600;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  /* 行内高亮（带半透明底色） */
+  .inline-highlight {
+    background: rgba(217, 119, 87, 0.15);
+    color: var(--color-accent-2);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-weight: 600;
+  }
+
+  /* 行内着色（只改颜色） */
+  .inline-accent {
+    color: var(--color-accent-1);
+    font-weight: 600;
+  }
+
+  /* 好坏标签 */
+  .label-good, .label-bad {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-right: 6px;
+    letter-spacing: 0.5px;
+  }
+  .label-good { background: #E3F0E3; color: #2E7D32; }
+  .label-bad  { background: #FDE2E2; color: #C62828; }
+
+  /* 装饰分割线 */
+  .divider {
+    text-align: center;
+    color: var(--color-accent-1);
+    font-size: 16px;
+    letter-spacing: 8px;
+    margin: 2em 0;
+  }
+  .divider::before { content: "· · ·"; }
+
+  /* 章节编号（小标签） */
+  .section-number {
+    display: inline-block;
+    font-size: 12px;
+    color: var(--color-accent-1);
+    letter-spacing: 2px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  /* 分割线（细线型，由 AI 根据原文样式调整） */
+  .section-divider {
+    border: 0;
+    border-top: 1px solid rgba(120, 120, 112, 0.18);
+    margin: 28px 0;
+    height: 0;
+  }
+  /* 分割线（装饰符型，如 · · · / ✦ ✦ ✦） */
+  .divider-symbol {
+    text-align: center;
+    color: var(--color-accent-1);
+    letter-spacing: 8px;
+    font-size: 14px;
+    margin: 2em 0;
+    opacity: 0.7;
+  }
+
+  /* 代码块（公众号风格：div + code，不用 pre）*/
+  .code-block {
+    background: var(--color-bg-code);
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 1.4em 0;
+    overflow-x: auto;
+  }
+  .code-block code {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--color-text);
+    background: transparent;
+    padding: 0;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  /* 作者卡 */
+  .author-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--color-bg-quote);
+    border-radius: 8px;
+    margin: 2em 0;
+    font-size: 14px;
+    color: var(--color-text-secondary);
+  }
+
+  @media (max-width: 600px) {
+    #article { padding: 0 14px; }
+    .toolbar { position: static; margin: 12px; max-width: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button onclick="selectArticle()">全选正文</button>
+  <div>点击后按 <b>⌘/Ctrl + C</b> 复制，粘贴到公众号编辑器。</div>
+</div>
+
+<article id="article">
+
+  <!--
+    article-body 是真正会被复制到公众号编辑器的内容区。
+    背景色必须以 inline style 写在这个 <section> 上，否则粘贴时背景会丢失。
+    AI 生成模板时，把下面的 background 替换成 IMPORTANT_page_background 的值。
+  -->
+  <section id="article-body" style="background: rgba(26,26,24,0.02); padding: 16px 0;">
+
+  <!-- ===== DEMO 正文开始（由 AI 用真实的组件演示填充） ===== -->
+  <!-- 要求：每个识别出的组件都要出现至少一次，让用户能直观地当"组件字典"用 -->
+
+  <span class="section-number">SECTION 01</span>
+  <h1>这里是文章标题的样子</h1>
+
+  <p>这里是一段正文，用来演示段落的字号、行高、字间距和颜色。中文段落里一般会出现 <span class="inline-accent">行内着色</span>、<span class="inline-highlight">行内高亮</span>、<strong>加粗强调</strong> 以及 <a href="#">超链接</a>，这些小细节决定了一篇文章的视觉辨识度。</p>
+
+  <h2>二级标题的样子</h2>
+
+  <p>二级标题通常承载章节分组。下面来看几个常见的组件：</p>
+
+  <div class="emphasis-box">
+    这是强调框（.emphasis-box）：适合放段落级的提醒、关键结论或边栏笔记。左侧有一条主色的竖线。
+  </div>
+
+  <div class="key-point">
+    <b>这是重点框（.key-point）</b>——带装饰符的卡片，用来总结一段话的核心观点。
+  </div>
+
+  <p>
+    <span class="step-num">1</span>步骤一：这里写第一步的说明。<br>
+    <span class="step-num">2</span>步骤二：这里写第二步的说明。<br>
+    <span class="step-num">3</span>步骤三：这里写第三步的说明。
+  </p>
+
+  <p>
+    <span class="label-good">推荐</span>好的做法写在这一行。<br>
+    <span class="label-bad">避免</span>不推荐的做法写在这一行。
+  </p>
+
+  <div class="divider"></div>
+
+  <h3>三级标题</h3>
+
+  <blockquote>
+    这是引用段落。适合原文摘录、他人观点、补充背景。公众号里常用的"左竖线+灰底"视觉。
+  </blockquote>
+
+  <ul>
+    <li>无序列表项一</li>
+    <li>无序列表项二</li>
+    <li>无序列表项三</li>
+  </ul>
+
+  <ol>
+    <li>有序列表项一</li>
+    <li>有序列表项二</li>
+  </ol>
+
+  <figure>
+    <img src="https://via.placeholder.com/680x380?text=image" alt="示例图">
+    <figcaption>图注：这里是图片下方的说明文字。</figcaption>
+  </figure>
+
+  <!-- 分割线（section-divider）— 必须在 demo 里出现 -->
+  <div class="section-divider"></div>
+
+  <p>行内代码演示：<code>const x = 1</code>。下面是代码块（必须在 demo 里出现）：</p>
+
+  <!-- 代码块（code-block）— 公众号风格，用 div 包裹而非 pre -->
+  <div class="code-block">
+    <code>提示词：画一张 X 推特截图，@OpenAI 蓝勾认证账号发推，深色模式。
+正文「ChatGPT Image 2 今日上线。这一代在中文字形、复杂版式、
+长文排版、风格迁移上全面跨代升级。」</code>
+  </div>
+
+  <p>代码块结束后，正文继续。</p>
+
+  <div class="author-card">
+    <div>
+      <div><b>作者名</b></div>
+      <div>公众号 · 职业标签</div>
+    </div>
+  </div>
+
+  <!-- ===== DEMO 正文结束 ===== -->
+  </section>
+</article>
+
+<script>
+  function selectArticle() {
+    // 选 #article-body：它的 inline style（含背景色）会随复制走，粘贴到公众号编辑器才有底色。
+    const node = document.getElementById("article-body");
+    const range = document.createRange();
+    range.selectNodeContents(node);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+</script>
+
+</body>
+</html>

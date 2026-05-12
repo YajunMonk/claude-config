@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>公众号排版编辑器</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #CC6B4A;
+      --primary-light: #D97757;
+      --bg-main: #FAFAFA;
+      --bg-card: #FFFFFF;
+      --text-primary: #1A1A1A;
+      --text-secondary: #6B6B6B;
+      --border: #E5E5E5;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --radius: 8px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      background: var(--bg-main);
+      color: var(--text-primary);
+    }
+
+    /* Header */
+    .header {
+      height: 64px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    .divider {
+      width: 1px;
+      height: 20px;
+      background: var(--border);
+    }
+
+    .template-selector {
+      position: relative;
+    }
+
+    .template-btn {
+      padding: 6px 12px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .template-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .template-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+      min-width: 200px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-8px);
+      transition: all 0.2s;
+      z-index: 100;
+    }
+
+    .template-dropdown.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .template-option {
+      padding: 10px 16px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .template-option:last-child {
+      border-bottom: none;
+    }
+
+    .template-option:hover {
+      background: var(--bg-main);
+      color: var(--primary);
+    }
+
+    .template-option.active {
+      color: var(--primary);
+      font-weight: 500;
+    }
+
+    .copy-btn {
+      padding: 8px 20px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .copy-btn:hover {
+      background: var(--primary-light);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(204,107,74,0.25);
+    }
+
+    .copy-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Container */
+    .container {
+      display: flex;
+      height: calc(100vh - 64px);
+      gap: 1px;
+      background: var(--border);
+    }
+
+    .pane {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-card);
+    }
+
+    .pane-header {
+      padding: 16px 24px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* Editor */
+    #markdown-input {
+      flex: 1;
+      padding: 24px;
+      border: none;
+      outline: none;
+      font-family: 'JetBrains Mono', 'SF Mono', Monaco, monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      resize: none;
+      background: var(--bg-card);
+      color: var(--text-primary);
+    }
+
+    #markdown-input::placeholder {
+      color: var(--text-secondary);
+      opacity: 0.5;
+    }
+
+    /* Preview */
+    #preview-content {
+      flex: 1;
+      padding: 24px;
+      overflow: auto;
+      background: var(--bg-card);
+    }
+
+    #preview-content::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #preview-content::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    #preview-content::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+
+    #preview-content::-webkit-scrollbar-thumb:hover {
+      background: #D0D0D0;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 88px;
+      right: 32px;
+      padding: 12px 20px;
+      background: var(--text-primary);
+      color: white;
+      border-radius: 6px;
+      font-size: 13px;
+      box-shadow: var(--shadow-md);
+      opacity: 0;
+      transform: translateY(-8px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-left">
+      <div class="logo">公众号排版编辑器</div>
+      <div class="divider"></div>
+      <div class="template-selector">
+        <button class="template-btn" onclick="toggleTemplateDropdown()">
+          <span id="current-template">Claude 暖橙</span>
+          <span style="margin-left: 4px;">▾</span>
+        </button>
+        <div class="template-dropdown" id="template-dropdown">
+          <div class="template-option active" onclick="selectTemplate('claude')">Claude 暖橙</div>
+          <div class="template-option" onclick="selectTemplate('minimal')">极简黑白</div>
+          <div class="template-option" onclick="selectTemplate('tech')">科技蓝</div>
+        </div>
+      </div>
+    </div>
+    <button class="copy-btn" onclick="copyContent()">复制内容</button>
+  </div>
+
+  <div class="container">
+    <div class="pane">
+      <div class="pane-header">Markdown</div>
+      <textarea id="markdown-input" placeholder="在此输入 Markdown 内容..."># 标题示例
+
+## 二级标题
+
+这是一段正文内容。支持 **粗体** 和行内代码 `code`。
+
+### 三级标题
+
+> 这是一段引用内容，用于突出重要信息。
+
+```python
+# 代码块示例
+def hello():
+    print("Hello World")
+```
+
+- 列表项 1
+- 列表项 2
+- 列表项 3</textarea>
+    </div>
+
+    <div class="pane">
+      <div class="pane-header">预览</div>
+      <div id="preview-content"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">已复制到剪贴板</div>
+
+  <script>
+    const input = document.getElementById('markdown-input');
+    const preview = document.getElementById('preview-content');
+    const toast = document.getElementById('toast');
+
+    // 模板样式定义
+    const templates = {
+      claude: {
+        name: 'Claude 暖橙',
+        styles: {
+          p: "font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:16px;color:#4a4a45;line-height:1.9;margin:0 0 14px;word-break:break-all;",
+          h1: "font-family:'Noto Serif SC','Songti SC',STSong,Georgia,serif;font-size:27px;font-weight:700;line-height:1.4;color:#CC6B4A;margin:24px 0 18px;word-break:break-all;",
+          h2: "font-family:'Noto Serif SC','Songti SC',STSong,Georgia,serif;font-size:23px;font-weight:700;line-height:1.4;color:#CC6B4A;margin:18px 0 16px;word-break:break-all;",
+          h3: "font-family:'Noto Serif SC','Songti SC',STSong,Georgia,serif;font-size:20px;font-weight:700;line-height:1.4;color:#CC6B4A;margin:16px 0 14px;word-break:break-all;",
+          code: "font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:14px;color:#CC785C;background:rgba(26,26,24,0.06);padding:1px 5px;border-radius:3px;",
+          pre: "background:#1a1a18;border-radius:6px;padding:14px 16px;margin:14px 0;overflow-x:auto;",
+          preCode: "white-space:pre-wrap;font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:13px;color:#e8e6e0;line-height:1.7;margin:0;",
+          blockquote: "background:#FAF8F5;border-left:3px solid #CC6B4A;padding:8px 20px;margin:0 0 14px;border-radius:0 6px 6px 0;",
+          blockquoteP: "font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:15px;color:#4a4a45;line-height:1.8;margin:0;word-break:break-all;",
+          ul: "font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:16px;color:#4a4a45;line-height:1.9;margin:0 0 14px;padding-left:24px;",
+          ol: "font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:16px;color:#4a4a45;line-height:1.9;margin:0 0 14px;padding-left:24px;",
+          li: "margin:6px 0;",
+          strong: "color:#1F1F1F;font-weight:600;",
+          hr: "border:none;border-top:1px solid rgba(120,120,112,0.18);height:0;margin:24px 0;",
+          img: "max-width:100%;border-radius:6px;display:block;margin:0 auto 14px;",
+          contentSection: "max-width:640px;margin:0 auto;padding:24px 20px 12px;"
+        }
+      },
+      minimal: {
+        name: '极简黑白',
+        styles: {
+          p: "font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:15px;color:#2a2a2a;line-height:1.8;margin:0 0 16px;",
+          h1: "font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:28px;font-weight:700;line-height:1.3;color:#000;margin:32px 0 20px;",
+          h2: "font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:22px;font-weight:700;line-height:1.3;color:#000;margin:24px 0 16px;",
+          h3: "font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:18px;font-weight:600;line-height:1.3;color:#000;margin:20px 0 12px;",
+          code: "font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:13px;color:#000;background:#f5f5f5;padding:2px 6px;border-radius:3px;",
+          pre: "background:#000;border-radius:4px;padding:16px;margin:16px 0;overflow-x:auto;",
+          preCode: "white-space:pre-wrap;font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:13px;color:#fff;line-height:1.6;margin:0;",
+          blockquote: "background:#f9f9f9;border-left:4px solid #000;padding:12px 20px;margin:0 0 16px;",
+          blockquoteP: "font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:14px;color:#2a2a2a;line-height:1.7;margin:0;",
+          ul: "font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:15px;color:#2a2a2a;line-height:1.8;margin:0 0 16px;padding-left:24px;",
+          ol: "font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:15px;color:#2a2a2a;line-height:1.8;margin:0 0 16px;padding-left:24px;",
+          li: "margin:6px 0;",
+          strong: "color:#000;font-weight:700;",
+          hr: "border:none;border-top:2px solid #000;height:0;margin:32px 0;",
+          img: "max-width:100%;display:block;margin:0 auto 16px;",
+          contentSection: "max-width:640px;margin:0 auto;padding:24px 16px;"
+        }
+      },
+      tech: {
+        name: '科技蓝',
+        styles: {
+          p: "font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:15px;color:#3a3a3a;line-height:1.9;margin:0 0 14px;",
+          h1: "font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:26px;font-weight:700;line-height:1.4;color:#0066CC;margin:24px 0 18px;",
+          h2: "font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:22px;font-weight:700;line-height:1.4;color:#0066CC;margin:18px 0 16px;",
+          h3: "font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:19px;font-weight:600;line-height:1.4;color:#0066CC;margin:16px 0 14px;",
+          code: "font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:13.5px;color:#0066CC;background:rgba(0,102,204,0.08);padding:2px 6px;border-radius:3px;",
+          pre: "background:#1a1f2e;border-radius:6px;padding:14px 16px;margin:14px 0;overflow-x:auto;",
+          preCode: "white-space:pre-wrap;font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:12.5px;color:#e8eaf0;line-height:1.7;margin:0;",
+          blockquote: "background:#f0f7ff;border-left:3px solid #0066CC;padding:8px 20px;margin:0 0 14px;border-radius:0 6px 6px 0;",
+          blockquoteP: "font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:14px;color:#3a3a3a;line-height:1.8;margin:0;",
+          ul: "font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:15px;color:#3a3a3a;line-height:1.9;margin:0 0 14px;padding-left:24px;",
+          ol: "font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:15px;color:#3a3a3a;line-height:1.9;margin:0 0 14px;padding-left:24px;",
+          li: "margin:6px 0;",
+          strong: "color:#1a1a1a;font-weight:600;",
+          hr: "border:none;border-top:1px solid rgba(0,102,204,0.2);height:0;margin:24px 0;",
+          img: "max-width:100%;border-radius:6px;display:block;margin:0 auto 14px;",
+          contentSection: "max-width:640px;margin:0 auto;padding:24px 16px 12px;"
+        }
+      }
+    };
+
+    let currentTemplate = 'claude';
+
+    function toggleTemplateDropdown() {
+      const dropdown = document.getElementById('template-dropdown');
+      dropdown.classList.toggle('show');
+    }
+
+    function selectTemplate(templateKey) {
+      currentTemplate = templateKey;
+      document.getElementById('current-template').textContent = templates[templateKey].name;
+
+      // 更新 active 状态
+      document.querySelectorAll('.template-option').forEach(opt => {
+        opt.classList.remove('active');
+      });
+      event.target.classList.add('active');
+
+      // 关闭下拉菜单
+      document.getElementById('template-dropdown').classList.remove('show');
+
+      // 重新渲染预览
+      convertMarkdown();
+    }
+
+    // 点击外部关闭下拉菜单
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.template-selector')) {
+        document.getElementById('template-dropdown').classList.remove('show');
+      }
+    });
+
+    function convertMarkdown() {
+      const markdown = input.value;
+      let html = marked.parse(markdown);
+      const styles = templates[currentTemplate].styles;
+
+      html = html
+        .replace(/<p>/g, `<p style="${styles.p}">`)
+        .replace(/<h1>/g, `<h1 style="${styles.h1}">`)
+        .replace(/<h2>/g, `<h2 style="${styles.h2}">`)
+        .replace(/<h3>/g, `<h3 style="${styles.h3}">`)
+        .replace(/<pre><code([^>]*)>/g, `<pre style="${styles.pre}"><code style="${styles.preCode}"$1>`)
+        .replace(/<code>/g, `<code style="${styles.code}">`)
+        .replace(/<blockquote>/g, `<blockquote style="${styles.blockquote}">`)
+        .replace(/<blockquote style="[^"]*"><p>/g, `<blockquote style="${styles.blockquote}"><p style="${styles.blockquoteP}">`)
+        .replace(/<ul>/g, `<ul style="${styles.ul}">`)
+        .replace(/<ol>/g, `<ol style="${styles.ol}">`)
+        .replace(/<li>/g, `<li style="${styles.li}">`)
+        .replace(/<strong>/g, `<strong style="${styles.strong}">`)
+        .replace(/<hr>/g, `<hr style="${styles.hr}">`)
+        .replace(/<img /g, `<img style="${styles.img}" `);
+
+      const wrappedHtml = `<section style="${styles.contentSection}">${html}</section>`;
+      preview.innerHTML = wrappedHtml;
+    }
+
+    function copyContent() {
+      const content = preview.querySelector('section');
+      if (!content) return;
+
+      const range = document.createRange();
+      range.selectNodeContents(content);
+
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+
+      try {
+        document.execCommand('copy');
+        selection.removeAllRanges();
+
+        toast.classList.add('show');
+        setTimeout(() => {
+          toast.classList.remove('show');
+        }, 2000);
+      } catch (err) {
+        console.error('复制失败:', err);
+      }
+    }
+
+    input.addEventListener('input', convertMarkdown);
+    convertMarkdown();
+  </script>
+</body>
+</html>

@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>serif-terracotta-essay · 公众号排版模板</title>
+<!--
+  模板名：serif-terracotta-essay
+  复刻自：https://mp.weixin.qq.com/s/OJkV7n1Qf8gU638wtXj9FQ
+  原文标题：Kimi K2.6 开源：一个人，和他的 300 Agents
+  原文作者：赛博禅心
+  生成时间：2026-04-22
+
+  设计语言摘要：
+    极浅暖灰底（rgba(26,26,24,0.02)）上的"长文 essay"风格。陶土红 #cf4436 作为唯一强调色，
+    出现在标题、装饰、ESSAY 标签和高亮卡片里；正文是低饱和暖灰 #4a4a45，配宋体衬线 H2，
+    呈现"科技博客 + 文学随笔"的克制气质。行高 1.9 极宽松，分节用细横线，每节末尾一句
+    陶土红粗体作"题眼"——是赛博禅心的强烈个人签名。
+
+  识别出的组件：
+    .essay-label     — 顶部 ESSAY 类的 mono 大写小标（红色，letter-spacing:2px）
+    .section-divider — 极细横线分割（rgba(120,120,112,0.18)）
+    .figure          — 居中图片
+    .caption         — 图片下方居中灰色 12px 图注
+    .emphasis-box    — 红色浅底 + 居中红色加粗文字的"金句卡"
+    .arrow-list      — 用红色 → 做项目符号、底部细线分隔的列表
+    .arrow-list-item — 列表单项
+    h2               — 宋体衬线红色大标题（章节标题）
+    .inline-code     — 行内代码：蓝色文字 + 极浅灰底
+    .accent-strong   — 行内陶土红粗体强调（"题眼"句）
+    .dark-strong     — 行内深色稍粗强调
+    .code-block      — 代码块（红浅底等宽，参照原文 callout 容器复用）
+    .link            — 蓝色 #007aaa 下划线链接
+-->
+<style>
+  :root {
+    /* ========== 调色板 ========== */
+    --color-accent-1: #cf4436;            /* 陶土红主色 */
+    --color-accent-2: #007aaa;            /* 蓝色辅色（链接 / 行内代码） */
+    --color-text: #4a4a45;                /* 正文暖灰 */
+    --color-heading: #cf4436;             /* H2 标题用主色 */
+    --color-text-strong: #1a1a18;         /* 段落里偶尔出现的深黑 */
+    --color-text-secondary: #8a8a82;      /* 图注 / 次要文字 */
+    --color-text-muted: #8a8a82;
+    --color-bg-page: rgba(26,26,24,0.02); /* 页面底（极浅暖灰，绝不是纯白） */
+    --color-bg-emphasis: rgba(207,68,54,0.06); /* 红浅底，金句卡 / 代码盒 */
+    --color-bg-quote: rgba(207,68,54,0.06);
+    --color-bg-code-inline: rgba(26,26,24,0.06);
+    --color-bg-code: rgba(207,68,54,0.06);
+    --color-border: rgba(120,120,112,0.18);
+    --color-link: #007aaa;
+
+    /* ========== 字体系统 ========== */
+    --font-body: 'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;
+    --font-heading: 'Noto Serif SC','Songti SC',STSong,Georgia,serif;
+    --font-mono: 'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;
+
+    --font-size-body: 15px;
+    --font-size-h1: 26px;
+    --font-size-h2: 22px;
+    --font-size-h3: 17px;
+    --font-size-caption: 12px;
+    --font-size-code: 13.5px;
+    --font-size-label: 12px;
+
+    --line-height-body: 1.9;
+    --line-height-heading: 1.4;
+    --letter-spacing-body: 0;
+    --letter-spacing-label: 2px;
+    --font-weight-heading: 700;
+
+    /* ========== 间距系统 ========== */
+    --space-paragraph: 14px;
+    --space-section-y: 32px;
+    --space-heading-top: 18px;
+    --space-heading-bottom: 16px;
+    --space-image: 6px;
+  }
+
+  /* ========== 基础 ========== */
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--color-bg-page);
+  }
+  body {
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    line-height: var(--line-height-body);
+    letter-spacing: var(--letter-spacing-body);
+    color: var(--color-text);
+    word-break: break-all;
+  }
+
+  /* 工具栏（仅浏览器辅助） */
+  .toolbar {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    background: #1a1a18;
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 1.5;
+    z-index: 1000;
+    box-shadow: 0 6px 16px rgba(0,0,0,.15);
+    max-width: 240px;
+  }
+  .toolbar button {
+    background: var(--color-accent-1);
+    color: #fff;
+    border: 0;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-bottom: 6px;
+  }
+
+  /* ========== 文章容器 ========== */
+  #article {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0;
+    background: transparent;
+  }
+  #article-body { padding: 0; }
+
+  /* 内部分节：原文里每个 section 都是 max-width:640px + padding:32px 16px */
+  .section {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: var(--space-section-y) 16px;
+  }
+  .section-narrow {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 24px 16px 12px;
+  }
+  .section-divider-wrap {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  /* ========== 标题 ========== */
+  #article h1 {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-h1);
+    color: var(--color-heading);
+    font-weight: var(--font-weight-heading);
+    line-height: var(--line-height-heading);
+    margin: 24px 0 18px;
+  }
+  #article h2 {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-h2);
+    color: var(--color-heading);
+    font-weight: var(--font-weight-heading);
+    line-height: var(--line-height-heading);
+    margin: var(--space-heading-top) 0 var(--space-heading-bottom);
+  }
+  #article h3 {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-h3);
+    color: var(--color-text-strong);
+    font-weight: 600;
+    line-height: 1.5;
+    margin: 20px 0 10px;
+  }
+
+  /* ========== 正文段落 ========== */
+  #article p {
+    margin: 0 0 var(--space-paragraph);
+    color: var(--color-text);
+    line-height: var(--line-height-body);
+  }
+
+  /* ========== 链接 ========== */
+  #article a, .link {
+    color: var(--color-link);
+    text-decoration: underline;
+    font-weight: 600;
+  }
+
+  /* ========== 顶部 ESSAY 标签 ========== */
+  .essay-label {
+    font-family: var(--font-mono);
+    font-size: var(--font-size-label);
+    color: var(--color-accent-1);
+    letter-spacing: var(--letter-spacing-label);
+    text-transform: uppercase;
+    margin: 0 0 8px;
+  }
+
+  /* ========== 分割线（细线型，原文最常见） ========== */
+  .section-divider {
+    border: 0;
+    border-top: 1px solid var(--color-border);
+    height: 0;
+    margin: 0;
+  }
+
+  /* ========== 图片 + 图注 ========== */
+  .figure {
+    text-align: center;
+    margin: 0 0 6px;
+  }
+  .figure img {
+    max-width: 100%;
+    width: 100%;
+    height: auto;
+    border-radius: 6px;
+    display: block;
+  }
+  .caption {
+    font-size: var(--font-size-caption);
+    color: var(--color-text-secondary);
+    text-align: center;
+    margin: 0 0 14px;
+    line-height: 1.6;
+  }
+
+  /* ========== 强调框 / 金句卡 ========== */
+  .emphasis-box {
+    background: var(--color-bg-emphasis);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 14px 0;
+  }
+  .emphasis-box p {
+    margin: 0;
+    color: var(--color-accent-1);
+    text-align: center;
+    font-weight: 700;
+    font-size: var(--font-size-body);
+    line-height: var(--line-height-body);
+  }
+
+  /* ========== 箭头列表（→ 前缀 + 底部细线） ========== */
+  .arrow-list {
+    margin: 10px 0;
+  }
+  .arrow-list-item {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .arrow-list-item:first-child { padding-top: 0; }
+  .arrow-list-item:last-child { border-bottom: 0; padding-bottom: 14px; }
+  .arrow-list-item p {
+    margin: 0;
+    line-height: 1.8;
+  }
+  .arrow-list-item .arrow {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--color-accent-1);
+    margin-right: 8px;
+  }
+
+  /* ========== 行内代码 ========== */
+  .inline-code, #article code {
+    font-family: var(--font-mono);
+    font-size: var(--font-size-code);
+    color: var(--color-accent-2);
+    background: var(--color-bg-code-inline);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  /* ========== 行内强调 ========== */
+  .accent-strong {
+    color: var(--color-accent-1);
+    font-weight: 700;
+  }
+  .dark-strong {
+    color: var(--color-text-strong);
+    font-weight: 600;
+  }
+
+  /* ========== 代码块（公众号风格：div 包裹） ========== */
+  .code-block {
+    background: var(--color-bg-code);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 14px 0;
+    overflow-x: auto;
+  }
+  .code-block code {
+    font-family: var(--font-mono);
+    font-size: var(--font-size-code);
+    line-height: 1.7;
+    color: var(--color-accent-1);
+    background: transparent;
+    padding: 0;
+    white-space: pre-wrap;
+    word-break: break-all;
+    display: block;
+  }
+
+  /* ========== 引用 ========== */
+  #article blockquote {
+    margin: 14px 0;
+    padding: 14px 18px;
+    background: var(--color-bg-emphasis);
+    border-left: 3px solid var(--color-accent-1);
+    color: var(--color-text);
+    border-radius: 0 6px 6px 0;
+  }
+  #article blockquote p { margin: 0; }
+
+  /* ========== 列表（原生） ========== */
+  #article ul, #article ol {
+    padding-left: 1.4em;
+    margin: 10px 0 14px;
+  }
+  #article li { margin: 6px 0; line-height: 1.8; }
+  #article ul li::marker { color: var(--color-accent-1); }
+
+  @media (max-width: 600px) {
+    .section, .section-narrow, .section-divider-wrap { padding-left: 14px; padding-right: 14px; }
+    .toolbar { position: static; margin: 12px; max-width: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button onclick="selectArticle()">全选正文</button>
+  <div>点击后按 <b>⌘/Ctrl + C</b> 复制，粘贴到公众号编辑器。</div>
+</div>
+
+<article id="article">
+
+  <!--
+    article-body：背景色以 inline style 写在这里，复制粘贴到公众号才不会丢。
+    背景值来自 summary.json 的 IMPORTANT_page_background：rgba(26,26,24,0.02)
+  -->
+  <section id="article-body" style="background: rgba(26,26,24,0.02); padding: 16px 0;">
+
+  <!-- ========== 顶部 ESSAY 标签 ========== -->
+  <div class="section-narrow">
+    <p class="essay-label">ESSAY</p>
+  </div>
+
+  <!-- ========== 顶部细线分割 ========== -->
+  <div class="section-divider-wrap">
+    <div class="section-divider"></div>
+  </div>
+
+  <!-- ========== 封面图 + 图注 + 引子 ========== -->
+  <div class="section" style="padding-top: 20px; padding-bottom: 32px;">
+    <div class="figure">
+      <img src="https://via.placeholder.com/680x288/cf4436/ffffff?text=Cover+Image" alt="封面图">
+    </div>
+    <p class="caption">这里是封面图的图注，可以放出处链接，比如<a href="#" class="link">引用旧文</a>。</p>
+
+    <p>这里是开篇引子段落。原文用极轻的语气说一句话作为钩子，紧接着抛出本文的<span class="accent-strong">核心金句</span>。下面这块就是金句卡：</p>
+
+    <!-- 金句卡 / 强调框 -->
+    <div class="emphasis-box">
+      <p>这里写一句最想被记住的话</p>
+    </div>
+
+    <p>金句之后再接一段过渡，可以挂一个<a href="#" class="link">外链</a>说明背景。</p>
+
+    <div class="figure">
+      <img src="https://via.placeholder.com/680x384/8a8a82/ffffff?text=Inline+Figure" alt="正文配图">
+    </div>
+    <p class="caption">这里是正文图的图注，常用来标注图片来源或解释图意。</p>
+
+    <p>下面是用来串联整篇文章的"先导清单"——用 → 箭头列表的形式列出本文要讲的几件事：</p>
+
+    <!-- 箭头列表（带底线） -->
+    <div class="arrow-list">
+      <div class="arrow-list-item"><p><span class="arrow">→</span>&nbsp;第一件事的关键词</p></div>
+      <div class="arrow-list-item"><p><span class="arrow">→</span>&nbsp;第二件事的关键词</p></div>
+      <div class="arrow-list-item"><p><span class="arrow">→</span>&nbsp;第三件事的关键词</p></div>
+    </div>
+
+    <p>合在一起，指向了本文的中心主题。</p>
+  </div>
+
+  <!-- ========== 分节：H2 章节 ========== -->
+  <div class="section-divider-wrap"><div class="section-divider"></div></div>
+
+  <div class="section">
+    <h2>先说第一件事</h2>
+
+    <p>章节正文。可以混入<span class="inline-code">inline_code</span>这样的行内代码，比如数字 <span class="inline-code">20%</span>、<span class="inline-code">100</span>，蓝色让数字从灰色正文里跳出来。</p>
+
+    <p>下面用<span class="dark-strong">深色加粗</span>做次要强调，用<span class="accent-strong">陶土红粗体</span>做主要强调，两者承担不同的语义。</p>
+
+    <p>有时候需要给读者一段大段的代码或提示词，就用代码块：</p>
+
+    <!-- 代码块（必须在 demo 中出现） -->
+    <div class="code-block">
+      <code>system_prompt = "你是一个公众号排版助手。"
+input = load_article("k2.6.md")
+output = render(input, template="serif-terracotta-essay")</code>
+    </div>
+
+    <p>引用别人的话或自己之前的判断，用 blockquote：</p>
+
+    <blockquote>
+      <p>引用块：陶土红左竖线 + 浅红底，节奏比正文更慢。</p>
+    </blockquote>
+
+    <p>章节末尾常用一句陶土红粗体作为"题眼"，独立成段：</p>
+
+    <p><span class="accent-strong">这里，用一句话点出本节真正想讲的东西</span></p>
+  </div>
+
+  <!-- ========== 第二节 ========== -->
+  <div class="section-divider-wrap"><div class="section-divider"></div></div>
+
+  <div class="section">
+    <h2>再看第二件事</h2>
+
+    <p>每一节的开头总是简短一句，把读者带进新主题。然后是配图：</p>
+
+    <div class="figure">
+      <img src="https://via.placeholder.com/680x320/cf4436/ffffff?text=Section+2+Figure" alt="二节配图">
+    </div>
+    <p class="caption">图注一行，居中，灰色 12px。</p>
+
+    <p>下面演示三级标题的样子，用得不多但保留：</p>
+
+    <h3>三级小标</h3>
+
+    <p>三级小标用宋体、深色、不那么大字号，承担次要分节的角色。</p>
+
+    <p>普通无序列表演示：</p>
+    <ul>
+      <li>列表项一</li>
+      <li>列表项二</li>
+      <li>列表项三</li>
+    </ul>
+
+    <p>每一节都以一句"题眼"收束：</p>
+    <p><span class="accent-strong">这里，用一句陶土红总结本节</span></p>
+  </div>
+
+  <!-- ========== 第三节 ========== -->
+  <div class="section-divider-wrap"><div class="section-divider"></div></div>
+
+  <div class="section">
+    <h2>第三件藏得最深</h2>
+
+    <div class="figure">
+      <img src="https://via.placeholder.com/680x424/4a4a45/ffffff?text=Paper+Figure" alt="论文配图">
+    </div>
+    <p class="caption">https://example.com/paper.pdf</p>
+
+    <p>这一节常用来讲一个偏技术的细节，里面会密集出现行内代码、术语、参数：通信量从 <span class="inline-code">O(Ld)</span> 降到 <span class="inline-code">O(Nd)</span>，规模 <span class="inline-code">48B</span> / <span class="inline-code">3B</span>，跑了 <span class="inline-code">1.4T</span> token。</p>
+
+    <p>段落之间不留空行，靠 14px margin 拉开节奏；行高 1.9 给中文呼吸感。</p>
+
+    <p><span class="accent-strong">而在这里，用一句话锁住第三节</span></p>
+  </div>
+
+  <!-- ========== 收束节 ========== -->
+  <div class="section-divider-wrap"><div class="section-divider"></div></div>
+
+  <div class="section">
+    <h2>同一个指向</h2>
+
+    <p>把三件事的关键词用一句话穿起来，回到开篇的金句意象。</p>
+
+    <p>最后用金句卡复述开篇那句话的"升级版"，形成首尾呼应：</p>
+
+    <div class="emphasis-box">
+      <p>开篇金句的回声版，落点在升华</p>
+    </div>
+  </div>
+
+  </section>
+</article>
+
+<script>
+  function selectArticle() {
+    // 选 #article-body：它的 inline style（含背景色）会随复制走，粘贴到公众号编辑器才有底色
+    const node = document.getElementById("article-body");
+    const range = document.createRange();
+    range.selectNodeContents(node);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+</script>
+
+</body>
+</html>

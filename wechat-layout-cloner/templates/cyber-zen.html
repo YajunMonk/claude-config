@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>赛博禅心 · 公众号排版模板</title>
+<!--
+  模板名：cyber-zen.html（赛博禅心）
+  复刻自：https://mp.weixin.qq.com/s/5e_dwdnVaW47wez0_RWy5A
+  原文标题：从特点到 API，Image2 最完整解读
+  原文作者：赛博禅心
+  生成时间：2026-04-22
+
+  设计语言摘要：
+  科技与禅意的融合——暖灰色底营造柔和阅读环境，主色红色 #cf4436 点缀标题和强调；
+  等宽字体代码块配合蓝色行内代码，技术感强烈；细线分割和宽松行高（1.9）
+  打造舒适的长文阅读体验。极简而不失温度，理性中透着人文关怀。
+
+  关键技巧：
+  背景色必须用两层 section 嵌套！
+  - 外层：background + padding:0（背景铺满）
+  - 内层：max-width + margin + padding（内容居中）
+-->
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background-color: rgba(26,26,24,0.02);
+  }
+  .toolbar {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    background: #111;
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 1.5;
+    z-index: 1000;
+    box-shadow: 0 6px 16px rgba(0,0,0,.15);
+    max-width: 260px;
+  }
+  .toolbar button {
+    background: #cf4436;
+    color: #fff;
+    border: 0;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-bottom: 6px;
+    width: 100%;
+  }
+  .toolbar p {
+    margin: 8px 0 0;
+    font-size: 11px;
+    opacity: 0.7;
+    line-height: 1.4;
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button onclick="selectArticle()">📋 全选正文</button>
+  <p>点击按钮后按 Ctrl/Cmd+C 复制，粘贴到公众号编辑器即可。<br><br><strong>关键：</strong>背景色用了两层 section 嵌套，这样才能在公众号编辑器里保留！</p>
+</div>
+
+<article id="article">
+  <!--
+    关键：两层 section 嵌套
+    外层：设置背景色，padding:0
+    内层：设置宽度、居中、内边距
+  -->
+  <section id="article-body" style="background:rgba(26,26,24,0.02);padding:0;">
+    <section style="max-width:640px;margin:0 auto;padding:24px 16px 12px;">
+
+      <!-- 红色标签 -->
+      <p style="font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:12px;color:#cf4436;letter-spacing:2px;text-transform:uppercase;margin:0 0 8px;word-break:break-all;">太牛逼了</p>
+
+    </section>
+
+    <!-- 分割线 -->
+    <section style="max-width:640px;margin:0 auto;padding:0 16px;">
+      <section style="border-top:1px solid rgba(120,120,112,0.18);height:0;"><br /></section>
+    </section>
+
+    <!-- 内容区 -->
+    <section style="max-width:640px;margin:0 auto;padding:20px 16px 32px;">
+
+      <!-- 图片 -->
+      <section style="text-align:center;margin:0 0 14px;">
+        <img src="https://via.placeholder.com/640x272/cf4436/ffffff?text=Cover+Image" style="max-width:100%;border-radius:6px;display:block;margin:0 auto;">
+      </section>
+      <p style="font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:13px;color:#8a8a82;line-height:1.75;margin:0 0 8px;word-break:break-all;">本文封面就是 GPT-Image-2 自己画的，非常强大</p>
+
+      <!-- 正文段落 -->
+      <p style="font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:15px;color:#4a4a45;line-height:1.9;margin:0 0 14px;word-break:break-all;">凌晨，OpenAI 正式发布 ChatGPT Images 2.0，ChatGPT、Codex、API 三端同时全量上线，API 模型名 <code style="font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:13.5px;color:#007aaa;background:rgba(26,26,24,0.06);padding:1px 5px;border-radius:3px;">gpt-image-2</code></p>
+
+      <!-- 强调框 -->
+      <section style="background:rgba(207,68,54,0.06);border-radius:8px;padding:16px 20px;margin:14px 0;">
+        <p style="font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:15px;color:#cf4436;line-height:1.9;margin:0;text-align:center;word-break:break-all;"><strong style="font-weight:700;">文字精细度，能骗过人眼</strong></p>
+      </section>
+
+      <p style="font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:15px;color:#4a4a45;line-height:1.9;margin:0 0 14px;word-break:break-all;">在正式发布前，我做了一轮全面实测，简直是效果夯爆了</p>
+
+      <p style="font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:15px;color:#4a4a45;line-height:1.9;margin:0 0 14px;word-break:break-all;">接下来，我会具体说一说这个模型的<span style="font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:13.5px;color:#007aaa;background:rgba(26,26,24,0.06);padding:1px 5px;border-radius:3px;">更多信息</span>、<span style="font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:13.5px;color:#007aaa;background:rgba(26,26,24,0.06);padding:1px 5px;border-radius:3px;">效果</span>以及<span style="font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:13.5px;color:#007aaa;background:rgba(26,26,24,0.06);padding:1px 5px;border-radius:3px;">局限性</span></p>
+
+      <p style="font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:15px;color:#4a4a45;line-height:1.9;margin:0 0 14px;word-break:break-all;"><span style="color:#cf4436;font-weight:bold;">这应该是全网最详实的一篇解读</span></p>
+
+    </section>
+
+    <!-- 分割线 -->
+    <section style="max-width:640px;margin:0 auto;padding:0 16px;">
+      <section style="border-top:1px solid rgba(120,120,112,0.18);height:0;"><br /></section>
+    </section>
+
+    <!-- 内容区 -->
+    <section style="max-width:640px;margin:0 auto;padding:32px 16px;">
+
+      <!-- 标题 -->
+      <h2 style="font-family:'Noto Serif SC','Songti SC',STSong,Georgia,serif;font-size:22px;font-weight:700;line-height:1.4;color:#cf4436;margin:18px 0 16px;word-break:break-all;">哪里能用 · 价格 · 权限</h2>
+
+      <p style="font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:15px;color:#4a4a45;line-height:1.9;margin:0 0 14px;word-break:break-all;">ChatGPT Images 2.0 今天对所有 ChatGPT 和 Codex 用户开放。带思考模式（Thinking）的进阶版本，仅 ChatGPT Plus、Pro、Business 用户能用</p>
+
+      <p style="font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:15px;color:#4a4a45;line-height:1.9;margin:0 0 14px;word-break:break-all;">API 端的模型字符串叫 <code style="font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:13.5px;color:#007aaa;background:rgba(26,26,24,0.06);padding:1px 5px;border-radius:3px;">gpt-image-2</code>，通过 Image API（generations / edits）和 Responses API（image_generation 工具）都能调用</p>
+
+      <p style="font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:15px;color:#4a4a45;line-height:1.9;margin:0 0 14px;word-break:break-all;"><strong style="color:#1a1a18;font-weight:600;">API 价格</strong>（按图按尺寸按质量，单位美元）</p>
+
+      <!-- 数据表格 -->
+      <section style="background:rgba(255,255,255,0.12);border:1px solid rgba(120,120,112,0.18);border-radius:8px;padding:0;margin:14px 0;overflow:hidden;">
+        <!-- 表头 -->
+        <section style="display:flex;background:rgba(26,26,24,0.06);border-bottom:1px solid rgba(120,120,112,0.18);">
+          <section style="flex:1.2;padding:10px 12px;font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:12px;color:#1a1a18;font-weight:600;text-align:center;">质量</section>
+          <section style="flex:1;padding:10px 8px;font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:11px;color:#1a1a18;font-weight:600;text-align:center;border-left:1px solid rgba(120,120,112,0.18);">1024×1024</section>
+          <section style="flex:1;padding:10px 8px;font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:11px;color:#1a1a18;font-weight:600;text-align:center;border-left:1px solid rgba(120,120,112,0.18);">1024×1536</section>
+          <section style="flex:1;padding:10px 8px;font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:11px;color:#1a1a18;font-weight:600;text-align:center;border-left:1px solid rgba(120,120,112,0.18);">1536×1024</section>
+        </section>
+        <!-- Low -->
+        <section style="display:flex;border-bottom:1px solid rgba(120,120,112,0.18);">
+          <section style="flex:1.2;padding:10px 12px;font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:13px;color:#4a4a45;font-weight:500;text-align:center;">Low</section>
+          <section style="flex:1;padding:10px 8px;font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:13px;color:#4a4a45;text-align:center;border-left:1px solid rgba(120,120,112,0.18);">$0.006</section>
+          <section style="flex:1;padding:10px 8px;font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:13px;color:#4a4a45;text-align:center;border-left:1px solid rgba(120,120,112,0.18);">$0.005</section>
+          <section style="flex:1;padding:10px 8px;font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:13px;color:#4a4a45;text-align:center;border-left:1px solid rgba(120,120,112,0.18);">$0.005</section>
+        </section>
+        <!-- Medium -->
+        <section style="display:flex;border-bottom:1px solid rgba(120,120,112,0.18);">
+          <section style="flex:1.2;padding:10px 12px;font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:13px;color:#4a4a45;font-weight:500;text-align:center;">Medium</section>
+          <section style="flex:1;padding:10px 8px;font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:13px;color:#4a4a45;text-align:center;border-left:1px solid rgba(120,120,112,0.18);">$0.053</section>
+          <section style="flex:1;padding:10px 8px;font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:13px;color:#4a4a45;text-align:center;border-left:1px solid rgba(120,120,112,0.18);">$0.041</section>
+          <section style="flex:1;padding:10px 8px;font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:13px;color:#4a4a45;text-align:center;border-left:1px solid rgba(120,120,112,0.18);">$0.041</section>
+        </section>
+        <!-- High -->
+        <section style="display:flex;">
+          <section style="flex:1.2;padding:10px 12px;font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:13px;color:#cf4436;font-weight:700;text-align:center;">High</section>
+          <section style="flex:1;padding:10px 8px;font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:13px;color:#cf4436;text-align:center;border-left:1px solid rgba(120,120,112,0.18);">$0.211</section>
+          <section style="flex:1;padding:10px 8px;font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:13px;color:#cf4436;text-align:center;border-left:1px solid rgba(120,120,112,0.18);">$0.165</section>
+          <section style="flex:1;padding:10px 8px;font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:13px;color:#cf4436;text-align:center;border-left:1px solid rgba(120,120,112,0.18);">$0.165</section>
+        </section>
+      </section>
+
+      <p style="font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:15px;color:#4a4a45;line-height:1.9;margin:0 0 14px;word-break:break-all;"><strong style="color:#1a1a18;font-weight:600;">调用示例</strong></p>
+
+      <p style="font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:15px;color:#4a4a45;line-height:1.9;margin:0 0 14px;word-break:break-all;">以本文开头那张封面右半边为例，21:9 的横版杂志页，high 档质量。完整调用如下：</p>
+
+      <!-- 代码块 -->
+      <section style="background:#1a1a18;border-radius:6px;padding:14px 16px;margin:14px 0;overflow-x:auto;">
+        <p style="white-space:pre-wrap;font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:12.5px;color:#e8e6e0;line-height:1.7;margin:0;">from openai import OpenAI</p>
+        <p style="white-space:pre-wrap;font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:12.5px;color:#e8e6e0;line-height:1.7;margin:0;">import base64</p>
+        <p style="white-space:pre-wrap;font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:12.5px;color:#e8e6e0;line-height:1.7;margin:0;"> </p>
+        <p style="white-space:pre-wrap;font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:12.5px;color:#e8e6e0;line-height:1.7;margin:0;">client = OpenAI(api_key="sk-...")</p>
+        <p style="white-space:pre-wrap;font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:12.5px;color:#e8e6e0;line-height:1.7;margin:0;"> </p>
+        <p style="white-space:pre-wrap;font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:12.5px;color:#e8e6e0;line-height:1.7;margin:0;">result = client.images.generate(</p>
+        <p style="white-space:pre-wrap;font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:12.5px;color:#e8e6e0;line-height:1.7;margin:0;">    model="gpt-image-2",</p>
+        <p style="white-space:pre-wrap;font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:12.5px;color:#e8e6e0;line-height:1.7;margin:0;">    prompt="A horizontal magazine cover, ...",</p>
+        <p style="white-space:pre-wrap;font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:12.5px;color:#e8e6e0;line-height:1.7;margin:0;">    size="1920x816",</p>
+        <p style="white-space:pre-wrap;font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:12.5px;color:#e8e6e0;line-height:1.7;margin:0;">    quality="high",</p>
+        <p style="white-space:pre-wrap;font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;font-size:12.5px;color:#e8e6e0;line-height:1.7;margin:0;">)</p>
+      </section>
+
+      <p style="font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:15px;color:#4a4a45;line-height:1.9;margin:0 0 14px;word-break:break-all;">就这么短。high 档每张图大约 60 秒、$0.165。封面整图分两次画（左 1024×1024 + 右 1920×816），加起来不到三毛钱人民币</p>
+
+    </section>
+
+    <!-- 分割线 -->
+    <section style="max-width:640px;margin:0 auto;padding:0 16px;">
+      <section style="border-top:1px solid rgba(120,120,112,0.18);height:0;"><br /></section>
+    </section>
+
+    <!-- 内容区 -->
+    <section style="max-width:640px;margin:0 auto;padding:32px 16px;">
+
+      <h2 style="font-family:'Noto Serif SC','Songti SC',STSong,Georgia,serif;font-size:22px;font-weight:700;line-height:1.4;color:#cf4436;margin:18px 0 16px;word-break:break-all;">第一个会思考的图像模型</h2>
+
+      <p style="font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:15px;color:#4a4a45;line-height:1.9;margin:0 0 14px;word-break:break-all;">这是这次发布最大的范式变化</p>
+
+      <!-- 引用框 -->
+      <section style="background:rgba(255,255,255,0.12);border-left:3px solid #cf4436;padding:8px 20px;margin:0 0 14px;border-radius:0 6px 6px 0;">
+        <p style="font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:14px;color:#4a4a45;line-height:1.8;margin:0 0 8px;word-break:break-all;">模型不只在渲染。它在理解 brief、理解受众，背后做创意决策。我们以前评估 AI 看技术输出，真正的变化是创意推理和设计审美</p>
+        <p style="font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:12px;color:#8a8a82;line-height:1.4;margin:0;word-break:break-all;">Dwayne Koh / Canva 创意策略师</p>
+      </section>
+
+      <p style="font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:15px;color:#4a4a45;line-height:1.9;margin:0 0 14px;word-break:break-all;"><strong style="color:#1a1a18;font-weight:600;">中文不再是图像模型的二等公民</strong>。这是这一代国内用户最该关心的变化</p>
+
+    </section>
+
+    <!-- 分割线 -->
+    <section style="max-width:640px;margin:0 auto;padding:0 16px;">
+      <section style="border-top:1px solid rgba(120,120,112,0.18);height:0;"><br /></section>
+    </section>
+
+    <!-- 内容区 -->
+    <section style="max-width:640px;margin:0 auto;padding:32px 16px;">
+
+      <h2 style="font-family:'Noto Serif SC','Songti SC',STSong,Georgia,serif;font-size:22px;font-weight:700;line-height:1.4;color:#cf4436;margin:18px 0 16px;word-break:break-all;">还做不到的事</h2>
+
+      <p style="font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:15px;color:#4a4a45;line-height:1.9;margin:0 0 14px;word-break:break-all;">ChatGPT Images 2.0 不是完美。OpenAI 在博客里把短板单独写了一节，没回避</p>
+
+      <p style="font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:15px;color:#4a4a45;line-height:1.9;margin:0 0 14px;word-break:break-all;">需要完整、连贯的物理世界模型的任务（折纸指南、魔方拼图）依然吃力</p>
+
+      <p style="font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;font-size:15px;color:#4a4a45;line-height:1.9;margin:0 0 14px;word-break:break-all;">极密、极重复的视觉细节（沙粒级别）会逼到模型上限</p>
+
+    </section>
+
+  </section>
+</article>
+
+<script>
+function selectArticle() {
+  const article = document.getElementById('article-body');
+  const range = document.createRange();
+  range.selectNodeContents(article);
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+  selection.addRange(range);
+  alert('✅ 已选中正文！\n\n现在按 Ctrl/Cmd+C 复制\n然后粘贴到公众号编辑器\n\n关键技巧：\n背景色用了两层 section 嵌套\n外层设置背景，内层设置内容\n这样才能在公众号编辑器里保留！');
+}
+</script>
+
+</body>
+</html>
