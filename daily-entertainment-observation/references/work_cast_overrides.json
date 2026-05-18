@@ -1,0 +1,68 @@
+{
+  "蜜语纪": {
+    "actors": ["朱珠", "钟汉良"],
+    "category": "film_tv",
+    "fit": "high"
+  },
+  "逐玉": {
+    "actors": ["张凌赫", "田曦薇"],
+    "category": "film_tv",
+    "fit": "mid_high"
+  },
+  "家事法庭": {
+    "actors": ["龚俊", "任敏"],
+    "category": "film_tv",
+    "fit": "high"
+  },
+  "隐身的名字": {
+    "actors": ["倪妮", "闫妮"],
+    "category": "film_tv",
+    "fit": "high"
+  },
+  "骄阳似我": {
+    "actors": ["赵今麦", "宋威龙"],
+    "category": "film_tv",
+    "fit": "mid_high"
+  },
+  "白日提灯": {
+    "actors": ["迪丽热巴", "陈飞宇"],
+    "category": "film_tv",
+    "fit": "mid"
+  },
+  "方圆八百米": {
+    "actors": ["丁勇岱", "许凯"],
+    "category": "film_tv",
+    "fit": "mid"
+  },
+  "钢铁森林": {
+    "actors": ["井柏然", "蔡文静", "秦俊杰"],
+    "category": "film_tv",
+    "fit": "mid"
+  },
+  "八千里路云和月": {
+    "actors": ["张云龙"],
+    "category": "film_tv",
+    "fit": "mid"
+  },
+  "哈哈哈哈哈第6季": {
+    "actors": ["鹿晗", "邓超", "陈赫", "范志毅", "王勉"],
+    "category": "variety",
+    "fit": "mid"
+  },
+  "宇宙闪烁请注意": {
+    "actors": ["黄晓明", "黄子韬", "刘耀文", "王鹤棣", "于洋"],
+    "category": "variety",
+    "fit": "mid"
+  },
+  "乘风2026": {
+    "actors": ["李小冉", "王濛", "唐艺昕", "乌兰图雅"],
+    "category": "variety",
+    "fit": "high",
+    "monitor_url": "https://piaofang.maoyan.com/tv/1607381/networkHeat"
+  },
+  "楚汉传奇": {
+    "actors": ["何润东"],
+    "category": "film_tv",
+    "fit": "mid"
+  }
+}

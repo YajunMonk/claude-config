@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>阿叫热点榜</title>
+  <style>
+    :root {
+      --cream: #fcf1ea;
+      --paper: #fff8f3;
+      --paper-deep: #f8e4d3;
+      --green: #a61d24;
+      --green-soft: #7f1118;
+      --green-pale: #f6d9d0;
+      --orange: #f1b33a;
+      --orange-soft: #ffe4ab;
+      --ink: #241916;
+      --muted: #756058;
+      --line: rgba(166, 29, 36, 0.1);
+      --shadow: 0 22px 54px rgba(112, 26, 18, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      background:
+        radial-gradient(circle at top left, rgba(241, 179, 58, 0.24), transparent 22%),
+        radial-gradient(circle at top right, rgba(204, 48, 49, 0.14), transparent 28%),
+        linear-gradient(180deg, #fff6ee 0%, #f9eadc 100%);
+    }
+
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: var(--ink);
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)),
+        radial-gradient(circle at 15% 0%, rgba(255, 255, 255, 0.42), transparent 30%);
+    }
+
+    .poster {
+      width: min(720px, calc(100vw - 20px));
+      margin: 10px auto 24px;
+      padding: 8px;
+      border-radius: 28px;
+      background: rgba(255, 248, 243, 0.84);
+      border: 1px solid rgba(166, 29, 36, 0.06);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 20px 20px;
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 86% 16%, rgba(255, 206, 102, 0.34), transparent 20%),
+        linear-gradient(135deg, rgba(122, 12, 24, 0.99) 0%, rgba(170, 24, 32, 0.97) 42%, rgba(208, 60, 40, 0.92) 78%, rgba(242, 178, 51, 0.84) 100%);
+      color: #fff8f1;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 14% 16%, rgba(255, 248, 239, 0.14), transparent 18%),
+        linear-gradient(120deg, transparent 0, transparent 58%, rgba(255, 248, 239, 0.08) 58%, rgba(255, 248, 239, 0.08) 69%, transparent 69%, transparent 100%);
+      pointer-events: none;
+    }
+
+    .hero > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-meta {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      min-height: 36px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 248, 239, 0.22);
+      background: rgba(255, 248, 239, 0.1);
+      color: rgba(255, 248, 239, 0.95);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    .hero-date {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(255, 248, 239, 0.92);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+    }
+
+    .hero-date::before {
+      content: "";
+      width: 24px;
+      height: 1px;
+      background: rgba(255, 220, 169, 0.5);
+    }
+
+    .hero h1 {
+      margin: 14px 0 10px;
+      font-family: "Songti SC", "STSong", "Source Han Serif SC", serif;
+      font-size: clamp(44px, 9vw, 76px);
+      line-height: 1.04;
+      letter-spacing: -0.03em;
+    }
+
+    .hero-copy {
+      margin: 0;
+      max-width: 34em;
+      color: rgba(255, 248, 239, 0.94);
+      font-size: 16px;
+      line-height: 1.62;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .hero-stat {
+      padding: 12px 12px 10px;
+      border-radius: 18px;
+      background: rgba(255, 248, 239, 0.12);
+      border: 1px solid rgba(255, 248, 239, 0.14);
+      backdrop-filter: blur(8px);
+    }
+
+    .hero-stat span {
+      display: block;
+      color: rgba(255, 248, 239, 0.76);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+    }
+
+    .hero-stat strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 30px;
+      line-height: 1;
+    }
+
+    .hero-stat small {
+      display: block;
+      margin-top: 8px;
+      color: rgba(255, 248, 239, 0.88);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .section {
+      margin-top: 10px;
+      padding: 16px 16px;
+      border-radius: 22px;
+      background: rgba(255, 249, 244, 0.9);
+      border: 1px solid rgba(166, 29, 36, 0.06);
+    }
+
+    .section-mark {
+      color: var(--orange);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+    }
+
+    .section h2 {
+      margin: 6px 0 10px;
+      font-family: "Songti SC", "STSong", "Source Han Serif SC", serif;
+      font-size: clamp(24px, 5vw, 36px);
+      line-height: 1.12;
+    }
+
+    .section-note {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.62;
+    }
+
+    .takeaway-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .takeaway {
+      padding: 13px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(255, 249, 244, 0.98), rgba(250, 236, 224, 0.84));
+      border: 1px solid var(--line);
+    }
+
+    .takeaway strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 16px;
+      color: var(--green);
+    }
+
+    .takeaway p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.62;
+    }
+
+    .stars {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .star-card {
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255, 249, 244, 0.98), rgba(248, 236, 225, 0.84));
+    }
+
+    .star-featured {
+      grid-column: 1 / -1;
+    }
+
+    .star-compact {
+      padding: 12px;
+    }
+
+    .star-compact .star-head {
+      gap: 10px;
+    }
+
+    .star-compact .rank-badge {
+      flex-basis: 40px;
+      width: 40px;
+      height: 40px;
+      border-radius: 13px;
+      font-size: 16px;
+    }
+
+    .star-compact .star-title h3 {
+      font-size: 21px;
+    }
+
+    .star-compact .star-title p,
+    .star-compact .star-summary {
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .star-compact .star-summary {
+      margin-top: 8px;
+    }
+
+    .star-compact .pill-row {
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .star-compact .pill {
+      min-height: 30px;
+      padding: 5px 8px;
+      font-size: 11px;
+    }
+
+    .star-head {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .rank-badge {
+      flex: 0 0 52px;
+      width: 46px;
+      height: 46px;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(180deg, #bb2228, #8b1419);
+      color: #ffffff;
+      font-size: 19px;
+      font-weight: 900;
+      box-shadow: 0 10px 24px rgba(166, 29, 36, 0.18);
+    }
+
+    .star-title h3 {
+      margin: 0;
+      font-size: 25px;
+      line-height: 1.12;
+      color: var(--green);
+    }
+
+    .star-title p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .star-summary {
+      margin: 10px 0 0;
+      color: var(--ink);
+      font-size: 15px;
+      line-height: 1.62;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 36px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .pill-fit-high,
+    .pill-risk-low {
+      background: rgba(241, 179, 58, 0.18);
+      color: var(--green);
+    }
+
+    .pill-fit-mid,
+    .pill-risk-review {
+      background: rgba(232, 103, 52, 0.14);
+      color: #a34718;
+    }
+
+    .pill-action {
+      background: rgba(166, 29, 36, 0.08);
+      color: var(--ink);
+    }
+
+    .watch-grid,
+    .content-grid,
+    .source-grid,
+    .mini-columns {
+      display: grid;
+      gap: 10px;
+    }
+
+    .mini-columns {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-items: start;
+    }
+
+    .mini-columns > div > h3 {
+      margin: 0 0 8px;
+      color: var(--green);
+      font-size: 17px;
+    }
+
+    .watch-card,
+    .content-card,
+    .source-card,
+    .rank-card,
+    .trend-card,
+    .closing {
+      padding: 13px;
+      border-radius: 17px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255, 249, 244, 0.98), rgba(247, 235, 223, 0.84));
+    }
+
+    .rank-card {
+      padding: 18px 18px 16px;
+      border-radius: 20px;
+      background: linear-gradient(180deg, rgba(255, 252, 247, 0.98), rgba(250, 240, 231, 0.88));
+    }
+
+    .watch-card h3,
+    .content-card h3,
+    .source-card h3,
+    .rank-card h3,
+    .trend-card h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      color: var(--green);
+    }
+
+    .watch-card p,
+    .content-card p,
+    .source-card p,
+    .trend-card p,
+    .closing p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .rank-grid,
+    .trend-grid,
+    .trend-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .rank-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .rank-card ol {
+      display: grid;
+      gap: 7px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .rank-card li {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr);
+      align-items: start;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .rank-card li span {
+      color: var(--green);
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .rank-card li p {
+      margin: 0;
+    }
+
+    .trend-group > h3 {
+      margin: 0 0 8px;
+      color: var(--green);
+      font-size: 18px;
+    }
+
+    .trend-list {
+      grid-template-columns: 1fr;
+    }
+
+    .trend-card {
+      display: grid;
+      grid-template-columns: 76px minmax(0, 1fr);
+      align-items: center;
+      gap: 10px;
+      padding: 11px 13px;
+      border-radius: 14px;
+    }
+
+    .trend-card h3 {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.2;
+    }
+
+    .trend-positive {
+      border-color: rgba(166, 29, 36, 0.18);
+      background: rgba(166, 29, 36, 0.07);
+    }
+
+    .trend-positive h3,
+    .trend-positive p {
+      color: #a61d24;
+    }
+
+    .trend-review {
+      border-color: rgba(40, 117, 85, 0.18);
+      background: rgba(55, 132, 93, 0.08);
+    }
+
+    .trend-review h3,
+    .trend-review p {
+      color: #2f7755;
+    }
+
+    .content-card strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 18px;
+      color: var(--ink);
+    }
+
+    .source-card h3 {
+      font-size: 20px;
+    }
+
+    .closing {
+      background: linear-gradient(135deg, rgba(132, 16, 23, 0.97), rgba(180, 31, 38, 0.94) 76%, rgba(238, 166, 60, 0.82) 100%);
+      border-color: rgba(255, 248, 239, 0.14);
+    }
+
+    .closing p {
+      color: rgba(255, 248, 239, 0.92);
+      font-size: 17px;
+    }
+
+    @media (min-width: 760px) {
+      .takeaway-list,
+      .content-grid,
+      .source-grid,
+      .watch-grid,
+      .trend-grid,
+      .trend-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .trend-list {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .poster {
+        width: calc(100vw - 14px);
+        padding: 8px;
+        border-radius: 24px;
+      }
+
+      .hero,
+      .section {
+        padding: 14px 14px;
+        border-radius: 20px;
+      }
+
+      .hero-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .stars,
+      .mini-columns {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-copy,
+      .section-note,
+      .star-summary,
+      .watch-card p,
+      .content-card p,
+      .source-card p,
+      .trend-card p,
+      .closing p {
+        font-size: 13px;
+      }
+
+      .star-title h3 {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="poster">
+    <section class="hero">
+      <div class="hero-meta">
+        <span class="eyebrow">叫叫品牌营销中心</span>
+        <div class="hero-date">{{OBSERVATION_DATE}}</div>
+      </div>
+      <h1>阿叫热点榜</h1>
+      <p class="hero-copy">先看作品热度，再看品牌匹配度和风险状态。本周更值得推进的是形象稳定、作品窗口清晰、能自然承接亲子成长叙事的艺人。</p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span>优先关注</span>
+          <strong>6</strong>
+          <small>先看这 6 位核心名字</small>
+        </div>
+        <div class="hero-stat">
+          <span>观察名单</span>
+          <strong>2</strong>
+          <small>热度高，但暂不直接推进</small>
+        </div>
+        <div class="hero-stat">
+          <span>重点作品</span>
+          <strong>5</strong>
+          <small>综艺与影视优先看作品窗口</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <span class="section-mark">本周判断</span>
+      <h2>先看这三条</h2>
+      <div class="takeaway-list">
+        <article class="takeaway">
+          <strong>作品带动，优先级更高</strong>
+          <p>优先看新剧、新综艺、平台热播带来的稳定热度，不把单点话题直接当成合作价值。</p>
+        </article>
+        <article class="takeaway">
+          <strong>风险状态，单独判断</strong>
+          <p>热度再高，也要把风险状态单独拎出来看，避免把争议流量误判成可合作流量。</p>
+        </article>
+        <article class="takeaway">
+          <strong>亲子成长，是筛选主线</strong>
+          <p>更优先选择能和家庭、陪伴、阅读、成长自然连接的艺人，而不是只追短期热度。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <span class="section-mark">明星优先级</span>
+      <h2>优先关注名单</h2>
+      <p class="section-note">只保留最值得推进的一层，直接看人、看原因、看结论。</p>
+      <div class="stars">
+        <article class="star-card">
+          <div class="star-head">
+            <span class="rank-badge">01</span>
+            <div class="star-title">
+              <h3>朱珠</h3>
+              <p>《蜜语纪》+ 短视频片段双驱动</p>
+            </div>
+          </div>
+          <p class="star-summary">作品窗口清楚，温暖成熟，和家庭教育、阅读陪伴主题的兼容度最高。</p>
+          <div class="pill-row">
+            <span class="pill pill-fit-high">匹配 高</span>
+            <span class="pill pill-risk-low">风险 低</span>
+            <span class="pill pill-action">建议 优先关注</span>
+          </div>
+        </article>
+
+        <article class="star-card">
+          <div class="star-head">
+            <span class="rank-badge">02</span>
+            <div class="star-title">
+              <h3>钟汉良</h3>
+              <p>《蜜语纪》高位表现，作品驱动稳定</p>
+            </div>
+          </div>
+          <p class="star-summary">信任感强，家庭向表达自然，适合品牌短片、亲子陪伴和家庭阅读主题。</p>
+          <div class="pill-row">
+            <span class="pill pill-fit-high">匹配 高</span>
+            <span class="pill pill-risk-low">风险 低</span>
+            <span class="pill pill-action">建议 优先评估</span>
+          </div>
+        </article>
+
+        <article class="star-card">
+          <div class="star-head">
+            <span class="rank-badge">03</span>
+            <div class="star-title">
+              <h3>李现</h3>
+              <p>B站传播自然，内容承接力强</p>
+            </div>
+          </div>
+          <p class="star-summary">更适合成长探索、男孩向启发和品牌讲故事的合作方向，传播延展性也更好。</p>
+          <div class="pill-row">
+            <span class="pill pill-fit-high">匹配 高</span>
+            <span class="pill pill-risk-low">风险 低</span>
+            <span class="pill pill-action">建议 值得推进</span>
+          </div>
+        </article>
+
+        <article class="star-card">
+          <div class="star-head">
+            <span class="rank-badge">04</span>
+            <div class="star-title">
+              <h3>李小冉</h3>
+              <p>综艺成绩带来稳定正向讨论</p>
+            </div>
+          </div>
+          <p class="star-summary">气质稳、好感度强，适合亲子陪伴、家庭成长和阅读月这类更温暖的内容合作。</p>
+          <div class="pill-row">
+            <span class="pill pill-fit-high">匹配 高</span>
+            <span class="pill pill-risk-low">风险 低</span>
+            <span class="pill pill-action">建议 优先关注</span>
+          </div>
+        </article>
+
+        <article class="star-card">
+          <div class="star-head">
+            <span class="rank-badge">05</span>
+            <div class="star-title">
+              <h3>倪妮 / 闫妮</h3>
+              <p>女性题材热度，情感议题清晰</p>
+            </div>
+          </div>
+          <p class="star-summary">更容易承接女性家长、家庭沟通和陪伴成长类表达，内容质感也更成熟。</p>
+          <div class="pill-row">
+            <span class="pill pill-fit-high">匹配 高</span>
+            <span class="pill pill-risk-low">风险 低</span>
+            <span class="pill pill-action">建议 可进优先候选</span>
+          </div>
+        </article>
+
+        <article class="star-card">
+          <div class="star-head">
+            <span class="rank-badge">06</span>
+            <div class="star-title">
+              <h3>龚俊 / 任敏</h3>
+              <p>《家事法庭》双平台同时出现</p>
+            </div>
+          </div>
+          <p class="star-summary">作品热度稳定，年轻认知度和家庭议题兼具，适合内容共创和阅读主题联动。</p>
+          <div class="pill-row">
+            <span class="pill pill-fit-high">匹配 中高</span>
+            <span class="pill pill-risk-low">风险 低</span>
+            <span class="pill pill-action">建议 可进优先候选</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <span class="section-mark">观察名单</span>
+      <h2>先看，不急着推进</h2>
+      <div class="watch-grid">
+        <article class="watch-card">
+          <h3>章若楠</h3>
+          <p>热度主要来自事件讨论，不是稳定作品窗口。形象清新，但当前更适合继续观察剧方与工作室后续回应。</p>
+        </article>
+        <article class="watch-card">
+          <h3>鹿晗</h3>
+          <p>综艺回归带来高讨论度，但和阅读成长主题的直接连接不如前一层艺人自然，建议先放在弹性候选位。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <span class="section-mark">内容热区</span>
+      <h2>重点综艺</h2>
+      <div class="content-grid">
+        <article class="content-card">
+          <strong>哈哈哈哈哈第6季</strong>
+          <p>鹿晗回归带来的综艺热度最明确，适合看平台级话题承接。</p>
+        </article>
+        <article class="content-card">
+          <strong>乘风</strong>
+          <p>微博里的舞台片段和讨论度很强，更适合抓出圈瞬间。</p>
+        </article>
+        <article class="content-card">
+          <strong>宇宙闪烁请注意</strong>
+          <p>熟人局和旅行感强，天然更适合软性内容合作。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <span class="section-mark">影视热区</span>
+      <h2>重点影视</h2>
+      <div class="content-grid">
+        <article class="content-card">
+          <strong>蜜语纪</strong>
+          <p>本周最强的剧集信号之一，直接带动朱珠、钟汉良的合作判断。</p>
+        </article>
+        <article class="content-card">
+          <strong>逐玉</strong>
+          <p>爱奇艺和腾讯视频双平台同时出现，热度更稳，不是单点爆发。</p>
+        </article>
+        <article class="content-card">
+          <strong>家事法庭</strong>
+          <p>家庭与社会议题兼具，最适合承接成长和陪伴类品牌表达。</p>
+        </article>
+        <article class="content-card">
+          <strong>白日提灯</strong>
+          <p>平台讨论度高，是当前剧集热区的重要补充样本。</p>
+        </article>
+        <article class="content-card">
+          <strong>八千里路云和月 / 钢铁森林</strong>
+          <p>说明爱奇艺热播面的广度较好，能持续提供作品热度信号。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <span class="section-mark">数据判断</span>
+      <h2>先看哪几个来源</h2>
+      <div class="source-grid">
+        <article class="source-card">
+          <h3>微博</h3>
+          <p>最适合抓明星事件热度和综艺出圈片段。</p>
+        </article>
+        <article class="source-card">
+          <h3>爱奇艺 + 腾讯视频</h3>
+          <p>最适合看作品热度，也是合作判断最稳的一层。</p>
+        </article>
+        <article class="source-card">
+          <h3>B站 + 豆瓣</h3>
+          <p>分别补年轻传播和口碑气质，不直接决定主排序。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="closing">
+        <p>本周优先合作对象的共同特征很明确：作品热度清晰、风险稳定、并且能自然连接亲子成长主题。</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

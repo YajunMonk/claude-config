@@ -1,0 +1,4 @@
+interface:
+  display_name: "Daily Entertainment Observation"
+  short_description: "Generate daily entertainment long images"
+  default_prompt: "Use $daily-entertainment-observation to create today's entertainment observation in the active workspace and deliver the final result as a long PNG image."
