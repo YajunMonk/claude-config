@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI 投流图片变体"
+  short_description: "从参考投流截图抽象构图与质感，生成原创 9:16 图片变体并归档。"
+  default_prompt: "请按 AI 投流图片变体流程分析参考图，忽略水印、字幕和 Logo，生成 5 张原创 9:16 衍生图并按日期归档。"
