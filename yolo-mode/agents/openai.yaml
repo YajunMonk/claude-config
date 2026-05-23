@@ -1,0 +1,7 @@
+interface:
+  display_name: "Yolo Mode"
+  short_description: "Deploy every app/backend change to production"
+  default_prompt: "Use $yolo-mode while developing this product so every content or code change is deployed to production and the public URL, endpoint, or deployment link is reported."
+  brand_color: "#111827"
+policy:
+  allow_implicit_invocation: true
