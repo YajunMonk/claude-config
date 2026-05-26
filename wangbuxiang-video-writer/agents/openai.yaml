@@ -1,0 +1,6 @@
+interface:
+  display_name: "王不响短视频写作"
+  short_description: "把AI想法、录音笔记和草稿整理成王不响短视频口播成稿"
+  default_prompt: "Use $wangbuxiang-video-writer to turn my rough AI idea or voice note into a Wangbuxiang-style short video script."
+policy:
+  allow_implicit_invocation: true
